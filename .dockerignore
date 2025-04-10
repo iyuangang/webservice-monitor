@@ -1,0 +1,54 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+ENV/
+
+# IDE 和编辑器
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 测试相关
+.coverage
+htmlcov/
+.pytest_cache/
+
+# 应用数据（如果有）
+data/
+logs/
+reports/
+
+# 文档
+docs/
+*.md
+LICENSE
+
+# CI/CD
+.github/

@@ -164,3 +164,85 @@ websvc-monitor test -u "http://api.example.com/status" -r 5
 ## 许可证
 
 MIT
+
+## Docker 使用方法
+
+### 使用预构建镜像
+
+```bash
+# 下载最新的 Docker 镜像
+docker pull ghcr.io/yourusername/webservice-monitor:latest
+
+# 创建必要的目录
+mkdir -p data logs reports config
+
+# 运行容器
+docker run -d \
+  --name webservice-monitor \
+  -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/logs:/app/logs" \
+  -v "$(pwd)/reports:/app/reports" \
+  -v "$(pwd)/config:/app/config" \
+  ghcr.io/yourusername/webservice-monitor:latest start
+```
+
+### 使用 Docker Compose
+
+1. 创建 `docker-compose.yml` 文件：
+
+```yaml
+version: '3'
+
+services:
+  webservice-monitor:
+    image: ghcr.io/yourusername/webservice-monitor:latest
+    container_name: webservice-monitor
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./reports:/app/reports
+      - ./config:/app/config
+    command: start
+```
+
+2. 启动服务：
+
+```bash
+docker-compose up -d
+```
+
+### 使用 GitHub Actions 产物
+
+1. 从最新的 GitHub Release 下载 `webservice-monitor.tar.gz`
+2. 加载镜像：
+
+```bash
+docker load < webservice-monitor.tar.gz
+```
+
+3. 查看可用的镜像标签：
+
+```bash
+docker images webservice-monitor
+```
+
+4. 运行容器（使用适当的标签）：
+
+```bash
+docker run -d \
+  --name webservice-monitor \
+  -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/logs:/app/logs" \
+  -v "$(pwd)/reports:/app/reports" \
+  -v "$(pwd)/config:/app/config" \
+  webservice-monitor:tag start
+```
+
+## 持续集成和部署
+
+本项目使用 GitHub Actions 进行持续集成和部署：
+
+- 每次推送到主分支会自动构建包和 Docker 镜像
+- 创建新标签（如 `v1.0.0`）会自动发布新版本
+- 所有构建产物可在 GitHub Actions 工作流中下载

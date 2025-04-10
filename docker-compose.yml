@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  webservice-monitor:
+    image: webservice-monitor:latest
+    container_name: webservice-monitor
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./reports:/app/reports
+      - ./config:/app/config
+    command: start
+    # 如果想在前台运行，可以使用：
+    # command: start --foreground 
