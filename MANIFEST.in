@@ -1,0 +1,5 @@
+include README.md
+include LICENSE
+include requirements.txt
+recursive-include webservice_monitor/config/templates *.html
+recursive-include webservice_monitor/scripts *.py 

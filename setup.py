@@ -2,9 +2,21 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+import os
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
+
+
+def package_files(directory):
+    paths = []
+    for path, directories, filenames in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join("..", path, filename))
+    return paths
+
+
+extra_files = package_files("webservice_monitor/scripts")
 
 setup(
     name="webservice-monitor",
@@ -19,6 +31,7 @@ setup(
     include_package_data=True,
     package_data={
         "webservice_monitor.config": ["templates/*.html"],
+        "webservice_monitor": extra_files,
     },
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -34,7 +47,6 @@ setup(
         "pandas>=1.3.0",
         "matplotlib>=3.4.0",
         "jinja2>=3.0.0",
-        "python-daemon>=2.3.0",
         "psutil>=5.9.0",
     ],
     entry_points={
