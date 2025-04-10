@@ -48,6 +48,9 @@ setup(
         "matplotlib>=3.4.0",
         "jinja2>=3.0.0",
         "psutil>=5.9.0",
+        "numpy>=1.20.0",
+        "statsmodels>=0.13.0",
+        "seaborn>=0.11.0",
     ],
     entry_points={
         "console_scripts": [

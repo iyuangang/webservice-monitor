@@ -101,6 +101,17 @@
         page-break-before: always;
       }
     }
+
+    .chart-description {
+      color: #666;
+      font-style: italic;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
   </style>
 </head>
 
@@ -164,6 +175,53 @@
     <h3>调用成功率趋势</h3>
     <img src="{{ charts.success_rate_chart }}" alt="成功率趋势图">
   </div>
+
+  {% if charts.hourly_peak_chart %}
+  <div class="chart-container">
+    <h3>每小时峰值响应时间</h3>
+    <img src="{{ charts.hourly_peak_chart }}" alt="小时峰值响应时间图">
+  </div>
+  {% endif %}
+
+  {% if charts.response_time_heatmap %}
+  <div class="chart-container page-break">
+    <h3>响应时间分布热图</h3>
+    <p class="chart-description">此热图显示不同时间段响应时间的分布情况，帮助识别性能瓶颈的时间模式。</p>
+    <img src="{{ charts.response_time_heatmap }}" alt="响应时间分布热图">
+  </div>
+  {% endif %}
+
+  {% if charts.status_code_chart %}
+  <div class="chart-container">
+    <h3>状态码分布</h3>
+    <p class="chart-description">展示不同HTTP状态码的分布，帮助分析接口错误模式。</p>
+    <img src="{{ charts.status_code_chart }}" alt="状态码分布">
+  </div>
+  {% endif %}
+
+  {% if charts.performance_comparison %}
+  <div class="chart-container page-break">
+    <h3>性能对比分析</h3>
+    <p class="chart-description">多维度展示各接口性能指标对比，包括响应时间、成功率、稳定性和调用量。</p>
+    <img src="{{ charts.performance_comparison }}" alt="性能对比分析">
+  </div>
+  {% endif %}
+
+  {% if charts.availability_radar %}
+  <div class="chart-container">
+    <h3>时段可用性雷达图</h3>
+    <p class="chart-description">展示不同时段的接口可用性，帮助识别一天中哪些时段可能存在问题。</p>
+    <img src="{{ charts.availability_radar }}" alt="时段可用性雷达图">
+  </div>
+  {% endif %}
+
+  {% if charts.daily_comparison %}
+  <div class="chart-container page-break">
+    <h3>历史趋势对比</h3>
+    <p class="chart-description">比较过去几天的性能指标，帮助识别长期趋势和异常变化。</p>
+    <img src="{{ charts.daily_comparison }}" alt="历史趋势对比">
+  </div>
+  {% endif %}
   {% endif %}
 
   <!-- 告警部分 -->

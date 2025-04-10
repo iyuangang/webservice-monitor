@@ -424,7 +424,7 @@ def cleanup_old_data(days_to_keep: int = 30) -> Tuple[int, int, int]:
 
 
 def get_stats_for_report(date, config_id=None):
-    """获取生成报告所需的统计数据"""
+    """获取生成报告所需的统计数据，确保按分钟排序"""
     with get_connection() as conn:
         query = "SELECT * FROM minute_stats WHERE date(start_time) = ?"
         params = [date.isoformat()]
@@ -432,5 +432,8 @@ def get_stats_for_report(date, config_id=None):
         if config_id:
             query += " AND config_id = ?"
             params.append(config_id)
+
+        # 确保按时间排序
+        query += " ORDER BY start_time ASC"
 
         return pd.read_sql_query(query, conn, params=params)
