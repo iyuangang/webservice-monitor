@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #2c3e50;
+      margin-top: 20px;
+    }
+
+    h1 {
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .summary-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #3498db;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .alert {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 10px 0;
+    }
+
+    .alert-title {
+      color: #856404;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .chart-container {
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .chart-container img {
+      max-width: 100%;
+      height: auto;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .successful {
+      color: #28a745;
+    }
+
+    .failure {
+      color: #dc3545;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #6c757d;
+      font-size: 0.9em;
+      border-top: 1px solid #dee2e6;
+      padding-top: 20px;
+    }
+
+    @media print {
+      .page-break {
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>{{ title }}</h1>
+
+  <!-- 摘要部分 -->
+  <div class="summary-box">
+    <h2>摘要</h2>
+    <p><strong>日期:</strong> {{ date }}</p>
+    <p><strong>监控配置数:</strong> {{ summary.total_configs }}</p>
+    <p><strong>总调用次数:</strong> {{ summary.total_calls }}</p>
+    <p><strong>平均成功率:</strong> {{ "%.2f"|format(summary.success_rate) }}%</p>
+    <p><strong>平均响应时间:</strong> {{ "%.4f"|format(summary.avg_response_time) }}秒</p>
+    <p><strong>最大响应时间:</strong> {{ "%.4f"|format(summary.max_response_time) }}秒</p>
+  </div>
+
+  <!-- 性能数据表格 -->
+  <h2>接口性能数据</h2>
+  {% if performance_data %}
+  <table>
+    <thead>
+      <tr>
+        <th>配置名称</th>
+        <th>URL</th>
+        <th>总调用次数</th>
+        <th>成功率</th>
+        <th>平均响应时间</th>
+        <th>最大响应时间</th>
+        <th>最小响应时间</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for perf in performance_data %}
+      <tr>
+        <td>{{ perf.config_name }}</td>
+        <td>{{ perf.url }}</td>
+        <td>{{ perf.total_calls }}</td>
+        <td>{{ "%.2f"|format(perf.success_rate) }}%</td>
+        <td>{{ "%.4f"|format(perf.avg_response_time) }}秒</td>
+        <td>{{ "%.4f"|format(perf.max_response_time) }}秒</td>
+        <td>{{ "%.4f"|format(perf.min_response_time) }}秒</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>没有性能数据</p>
+  {% endif %}
+
+  <!-- 图表部分 -->
+  {% if charts %}
+  <h2>性能图表</h2>
+
+  <div class="chart-container">
+    <h3>平均响应时间趋势</h3>
+    <img src="{{ charts.response_time_chart }}" alt="响应时间趋势图">
+  </div>
+
+  <div class="chart-container">
+    <h3>调用成功率趋势</h3>
+    <img src="{{ charts.success_rate_chart }}" alt="成功率趋势图">
+  </div>
+  {% endif %}
+
+  <!-- 告警部分 -->
+  <div class="page-break"></div>
+  <h2>告警信息</h2>
+  {% if alerts %}
+  <p>在{{ date }}共有{{ alerts|length }}个告警:</p>
+
+  {% for alert in alerts %}
+  <div class="alert">
+    <div class="alert-title">
+      {{ alert.config_name }} - {{ "可用性告警" if alert.type == "availability" else "性能告警" }}
+    </div>
+    <p><strong>时间:</strong> {{ alert.timestamp }}</p>
+    <p><strong>消息:</strong> {{ alert.message }}</p>
+    <p><strong>状态:</strong> {{ "已解决" if alert.resolved else "未解决" }}</p>
+    {% if alert.resolved %}
+    <p><strong>解决时间:</strong> {{ alert.resolved_at }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <p>没有告警记录</p>
+  {% endif %}
+
+  <!-- 配置详情 -->
+  <div class="page-break"></div>
+  <h2>监控配置详情</h2>
+  {% if configs %}
+  {% for config in configs %}
+  <div class="summary-box">
+    <h3>{{ config.name }}</h3>
+    <p><strong>URL:</strong> {{ config.url }}</p>
+    <p><strong>请求方法:</strong> {{ config.method }}</p>
+    <p><strong>调用间隔:</strong> {{ config.call_interval }}秒</p>
+    <p><strong>批量调用次数:</strong> {{ config.calls_per_batch }}</p>
+    <p><strong>超时时间:</strong> {{ config.timeout }}秒</p>
+    <p><strong>告警阈值:</strong> {{ config.alert_threshold }}秒</p>
+    <p><strong>监控时间段:</strong> {{ config.monitoring_hours }}</p>
+    <p><strong>状态:</strong> {{ "活跃" if config.is_active else "禁用" }}</p>
+  </div>
+  {% endfor %}
+  {% else %}
+  <p>没有配置详情</p>
+  {% endif %}
+
+  <div class="footer">
+    <p>生成时间: {{ now|default(date) }}</p>
+    <p>WebService监控工具 v2.0.0</p>
+  </div>
+</body>
+
+</html>
