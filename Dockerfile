@@ -3,6 +3,8 @@ FROM python:3.9-slim AS builder
 
 WORKDIR /app
 
+RUN ls -lah dist
+
 # 复制 wheel 包 - 更改为通配符匹配多种可能位置
 COPY dist/*.whl ./ 2>/dev/null || true
 COPY python-package/*.whl ./ 2>/dev/null || true
