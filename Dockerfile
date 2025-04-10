@@ -3,8 +3,16 @@ FROM python:3.9-slim AS builder
 
 WORKDIR /app
 
-# 复制 wheel 包
-COPY dist/*.whl .
+# 复制 wheel 包 - 更改为通配符匹配多种可能位置
+COPY dist/*.whl ./ 2>/dev/null || true
+COPY python-package/*.whl ./ 2>/dev/null || true
+COPY *.whl ./ 2>/dev/null || true
+
+# 确保找到了 wheel 文件
+RUN if [ -z "$(ls -A *.whl 2>/dev/null)" ]; then \
+        echo "Error: No wheel files found!"; \
+        exit 1; \
+    fi
 
 # 安装项目及依赖到特定目录
 RUN pip install --no-cache-dir --target=/install *.whl
@@ -18,8 +26,9 @@ WORKDIR /app
 COPY --from=builder /install /usr/local/lib/python3.9/site-packages
 
 # 确保入口点脚本可用
-COPY --from=builder /install/bin/websvc-monitor /usr/local/bin/
-RUN chmod +x /usr/local/bin/websvc-monitor
+COPY --from=builder /install/bin/websvc-monitor /usr/local/bin/ 2>/dev/null || true 
+COPY --from=builder /install/Scripts/websvc-monitor /usr/local/bin/ 2>/dev/null || true
+RUN chmod +x /usr/local/bin/websvc-monitor 2>/dev/null || echo "Warning: Could not find websvc-monitor script"
 
 # 创建必要的目录
 RUN mkdir -p /app/data /app/logs /app/reports /app/config
@@ -34,10 +43,11 @@ ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
 VOLUME ["/app/data", "/app/logs", "/app/reports", "/app/config"]
 
 # 设置用户为非 root
-RUN useradd -m monitor
+RUN useradd -m monitor 2>/dev/null || adduser --disabled-password --gecos "" monitor
 RUN chown -R monitor:monitor /app
+
 USER monitor
 
 # 入口点
 ENTRYPOINT ["websvc-monitor"]
-CMD ["--help"]
+CMD ["--help"] 
